@@ -32,7 +32,8 @@ async function run() {
         await client.connect();
 
         // Connect to the "coffeeDB" database and access its "CoffeeCollection" collection
-        const coffeeCollection = client.db("coffeeDB").collection("CoffeeCollection");
+        const database = client.db("coffeeDB")
+        const coffeeCollection = database.collection("CoffeeCollection");
 
         app.get('/coffee', async (req, res) => {
             const cursor = await coffeeCollection.find({}).toArray();
@@ -58,12 +59,8 @@ async function run() {
             const id = req.params.id;
             const coffee = req.body;
             const { name, supplier, category, chef, taste, details, photo } = coffee
-            // Create a filter for movies with the title "Random Harvest"
             const filter = { _id: new ObjectId(id) };
-            /* Set the upsert option to insert a document if no documents match
-            the filter */
             const options = { upsert: true };
-            // Specify the update to set a value for the plot field
             const updateDoc = {
                 $set: {
                     name, supplier, category, chef, taste, details, photo
@@ -79,6 +76,27 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await coffeeCollection.deleteOne(query);
+            res.send(result)
+        })
+
+        // ---user apis---
+        const coffeeUserCollection = database.collection('coffeeUserCollection')
+
+        app.get('/users', async (req, res) => {
+            const cursor = await coffeeUserCollection.find({}).toArray();
+            res.send(cursor)
+        })
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await coffeeUserCollection.insertOne(user);
+            res.send(result)
+        })
+
+        app.delete('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await coffeeUserCollection.deleteOne(query);
             res.send(result)
         })
 
