@@ -5,17 +5,17 @@ require('dotenv').config()
 const port = process.env.PORT || 3000
 
 // middleware
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173'],
+    credentials: true
+}));
 app.use(express.json());
 
 
 //``````````````mongodb``````````````
-//mahim_coffee_khai;
-//NBPVqIVxKo1NVr8z;
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.jt5df8u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
-const uri = `mongodb://localhost:27017`;
+const uri = `mongodb+srv://practice_user:practice_user@cluster0.jt5df8u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -28,9 +28,6 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
-
         // Connect to the "coffeeDB" database and access its "CoffeeCollection" collection
         const database = client.db("coffeeDB")
         const coffeeCollection = database.collection("CoffeeCollection");
@@ -128,5 +125,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Coffee server is running on port😂 ${port}`)
+    console.log(`Coffee server is running on port${port}`)
 })
