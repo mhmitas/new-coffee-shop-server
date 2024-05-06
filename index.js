@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const cookieParser = require('cookie-parser')
 const app = express()
 require('dotenv').config()
 const port = process.env.PORT || 3000
@@ -12,6 +13,7 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser())
 
 
 //``````````````mongodb``````````````
@@ -43,6 +45,7 @@ async function run() {
         })
 
         app.get('/coffee', async (req, res) => {
+            console.log('Tok tuk Token =>', req.cookies.Token);
             const cursor = await coffeeCollection.find({}).toArray();
             res.send(cursor)
         })
