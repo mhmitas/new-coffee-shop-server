@@ -1,5 +1,7 @@
 const express = require('express')
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 require('dotenv').config()
 const port = process.env.PORT || 3000
@@ -14,7 +16,6 @@ app.use(express.json());
 
 //``````````````mongodb``````````````
 
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://practice_user:practice_user@cluster0.jt5df8u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -31,6 +32,15 @@ async function run() {
         // Connect to the "coffeeDB" database and access its "CoffeeCollection" collection
         const database = client.db("coffeeDB")
         const coffeeCollection = database.collection("CoffeeCollection");
+
+        // jwt APIs
+        app.post('/jwt', async (req, res) => {
+            const user = req.body
+            const token = jwt.sign(user, process.env.SECRET_TOKEN, { expiresIn: '1h' })
+            res
+                .cookie('Token', token, { httpOnly: true, secure: false, sameSite: false })
+                .send({ success: true })
+        })
 
         app.get('/coffee', async (req, res) => {
             const cursor = await coffeeCollection.find({}).toArray();
@@ -80,7 +90,7 @@ async function run() {
         const coffeeUserCollection = database.collection('coffeeUserCollection')
 
         app.get('/users', async (req, res) => {
-            const cursor = await coffeeUserCollection.find({}).toArray();
+            const cursor = await coffeeUserCollection.find().toArray();
             res.send(cursor)
         })
 
